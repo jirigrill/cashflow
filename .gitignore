@@ -1,0 +1,13 @@
+# data — never commit real financial data
+data/
+*.csv
+
+# secrets
+.env
+.env.*
+credentials*.json
+service-account*.json
+
+node_modules/
+dist/
+.DS_Store
