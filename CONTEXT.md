@@ -38,6 +38,20 @@ The casing a Category is shown in — the first-seen spelling of its label, in t
 A month in which a Category has no Entry. Absent is not zero: series break rather than
 drop to the axis, and averages divide by the months a Category is present.
 
+**Dev-mode export**:
+A `data/*.csv` file — a manual CSV export of one Tab, used as a development source only.
+An export is a **snapshot and goes stale**: it may disagree with the Tab it came from, and
+where they disagree the Tab wins. Never a second source of truth, and never evidence about
+the data.
+_Avoid_: fixture, local data, the CSVs (when the Tab is what is meant)
+
+**Data issue**:
+Something the app detects and reports rather than corrects — a sign anomaly, a stale
+roll-up, an unparseable cell. Data issues are grouped **by month**: one entry per affected
+month, listing every finding within it, so a single underlying mistake that trips two
+detectors reads as one problem rather than two.
+_Avoid_: error, warning, anomaly (that is one kind of Data issue)
+
 ### Classes
 
 **Class**:
@@ -83,19 +97,47 @@ A set of Categories the user has ticked in a chart legend. The app shows their s
 figure for the selected timeframe. A Selection is transient — it is never stored and
 never becomes a Category of its own.
 
-### Reconciliation
+### Checks
+
+Two checks, against two different kinds of truth. Roll-up check asks whether the app's
+arithmetic matches the spreadsheet's own arithmetic; Reconciliation asks whether the
+spreadsheet matches the bank. They are never collapsed into one word: they have different
+subjects, different failure meanings, and one of them is unavailable in dev mode.
+
+**Recomputation**:
+Deriving every displayed figure from Entries alone. The app always recomputes; a Tab's
+roll-up columns are never a source, only a subject of the Roll-up check.
+
+**Roll-up column**:
+A figure the source spreadsheet computes for itself — `forecast vs actual` and
+`actual income - outcome`, carried on the final Entry of each monthly block and again as
+a Tab-level total. Not an input to any Measure.
+
+**Roll-up check**:
+The check that Recomputation agrees with each Roll-up column — per month, per column, and
+per Tab total independently. Exact integer equality; there is no tolerance. A failure means
+the spreadsheet's stored figure is stale, never that the app's arithmetic is wrong.
+_Avoid_: reconciliation (that is the bank check), validation
+
+**Stale roll-up**:
+A Roll-up column whose value no longer matches the Entries above it, because a cell was
+edited after the spreadsheet last evaluated its formulas. The failure mode Roll-up check
+exists to catch.
 
 **Opening balance**:
 Money held before the first Entry — the `starting amount` row. Not a cashflow: it is
 excluded from every Class and every Measure, and serves only as the starting point for
-reconciliation.
+Reconciliation.
 _Avoid_: starting amount (that is the source label), excluded, initial balance
 
 **Bank balance**:
 The real balance of an account (Air Bank, Revolut) as recorded in a Tab's footer. Stated,
-not derived.
+not derived — a hand-entered snapshot of the account, so it is evidence about the world
+rather than a figure the spreadsheet computes.
 
 **Reconciliation**:
 The check that Opening balance plus Net cashflow equals the Bank balance. A mismatch means
-the data is wrong, never that a Class is wrong.
-_Avoid_: checkpoint, validation, audit
+Entries and the real account disagree — money moved without being recorded — and it does
+not mean a Class is wrong. Unlike Roll-up check, a mismatch is not necessarily fixable:
+the Entries may simply be incomplete for a year that was never fully tracked.
+_Avoid_: checkpoint, validation, audit, roll-up check
