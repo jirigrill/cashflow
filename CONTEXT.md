@@ -158,8 +158,9 @@ applied. Zero residual is a pass, whatever the Accepted gap's size, so the check
 new divergence rather than known history.
 
 **Reconciliation state**:
-One of four, ranked worst-first for display: **doesn't tie** (non-zero Residual),
-**ties** (zero Residual — noted as baselined when an Accepted gap was applied),
-**can't be evaluated** (the Tab states no closing Bank balance), and **unavailable**
-(dev mode, where Bank balances are not readable at all). The last two are neutral, not
-warnings: an in-progress year has no closing balance and should not have one.
+One of three, ranked worst-first for display: **doesn't tie** (non-zero Residual),
+**ties** (zero Residual — noted as baselined when an Accepted gap was applied), and
+**can't be evaluated** (the Tab states no closing Bank balance). The third is neutral, not
+a warning: an in-progress year has no closing balance and should not have one. The state
+depends on the Tab, never on the source the data came from — a Tab reconciles identically
+from the spreadsheet or from a Dev-mode export.
