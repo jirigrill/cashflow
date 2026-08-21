@@ -2,6 +2,13 @@
 data/
 *.csv
 
+# Worktrees symlink `data` to the real folder; `data/` above does not match a
+# symlink, so name it without the slash too.
+data
+
+# Screenshots render the real figures — same data, different format.
+prototype/shots/
+
 # secrets
 .env
 .env.*
