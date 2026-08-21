@@ -133,11 +133,33 @@ _Avoid_: starting amount (that is the source label), excluded, initial balance
 **Bank balance**:
 The real balance of an account (Air Bank, Revolut) as recorded in a Tab's footer. Stated,
 not derived — a hand-entered snapshot of the account, so it is evidence about the world
-rather than a figure the spreadsheet computes.
+rather than a figure the spreadsheet computes. **Not necessarily comparable across Tabs**:
+one Tab may state a plain cash figure where another states a foreign-currency position
+valued at hand-entered exchange rates.
 
 **Reconciliation**:
-The check that Opening balance plus Net cashflow equals the Bank balance. A mismatch means
-Entries and the real account disagree — money moved without being recorded — and it does
-not mean a Class is wrong. Unlike Roll-up check, a mismatch is not necessarily fixable:
-the Entries may simply be incomplete for a year that was never fully tracked.
+The check that Opening balance plus Net cashflow, less any Accepted gap, equals the Bank
+balance. A mismatch means Entries and the real account disagree — money moved without being
+recorded — and it does not mean a Class is wrong. Unlike Roll-up check, a mismatch is not
+necessarily fixable: the Entries may simply be incomplete for a year that was never fully
+tracked.
 _Avoid_: checkpoint, validation, audit, roll-up check
+
+**Accepted gap**:
+A stated, hand-entered figure on a Tab naming a Reconciliation difference the owner has
+decided not to chase. Per Tab, because Reconciliation is per Tab. Recorded in the source
+spreadsheet like any other datum — the app reads it and never writes it. Absent means zero:
+a Tab with no Accepted gap must tie exactly.
+_Avoid_: baseline, tolerance, threshold, fudge, adjustment
+
+**Residual**:
+What Reconciliation actually tests — the difference remaining after the Accepted gap is
+applied. Zero residual is a pass, whatever the Accepted gap's size, so the check reports
+new divergence rather than known history.
+
+**Reconciliation state**:
+One of four, ranked worst-first for display: **doesn't tie** (non-zero Residual),
+**ties** (zero Residual — noted as baselined when an Accepted gap was applied),
+**can't be evaluated** (the Tab states no closing Bank balance), and **unavailable**
+(dev mode, where Bank balances are not readable at all). The last two are neutral, not
+warnings: an in-progress year has no closing balance and should not have one.
