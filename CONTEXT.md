@@ -102,7 +102,7 @@ never becomes a Category of its own.
 Two checks, against two different kinds of truth. Roll-up check asks whether the app's
 arithmetic matches the spreadsheet's own arithmetic; Reconciliation asks whether the
 spreadsheet matches the bank. They are never collapsed into one word: they have different
-subjects, different failure meanings, and one of them is unavailable in dev mode.
+subjects, different failure meanings, and only one of them can fail unfixably.
 
 **Recomputation**:
 Deriving every displayed figure from Entries alone. The app always recomputes; a Tab's
