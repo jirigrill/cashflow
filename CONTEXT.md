@@ -49,8 +49,45 @@ _Avoid_: fixture, local data, the CSVs (when the Tab is what is meant)
 Something the app detects and reports rather than corrects — a sign anomaly, a stale
 roll-up, an unparseable cell. Data issues are grouped **by month**: one entry per affected
 month, listing every finding within it, so a single underlying mistake that trips two
-detectors reads as one problem rather than two.
+detectors reads as one problem rather than two. Issues that belong to a whole Tab rather
+than a month — a Reconciliation gap, a stale Tab total — group **by year** instead, in
+their own section. Every Data issue is either a Fault or a Notice, and none of them can be
+dismissed in the app: the spreadsheet is the only write surface, so the way to clear an
+issue is to fix the data.
 _Avoid_: error, warning, anomaly (that is one kind of Data issue)
+
+**Fault**:
+A Data issue where something is definitely wrong: a Sign contradiction, an unparseable
+cell, a Stale roll-up, a Misfiled row, a non-numeric Accepted gap. Faults are counted —
+the panel's collapsed header states the Fault count and nothing else.
+_Avoid_: error, critical, severity 1
+
+**Notice**:
+A Data issue worth seeing but not necessarily wrong: an Unrecognised category, a Presence
+gap. Uncounted, because a legitimate act — adding a category to the spreadsheet — must not
+make the panel read as though something broke.
+_Avoid_: warning, info, minor
+
+**Unrecognised category**:
+A Category whose source label is absent from the Class lookup table, so its Class is
+guessed from the sign of its amount. Reported once per label on first appearance, never
+once per Entry. A Notice rather than a Fault: it is equally the signature of a new category
+the owner meant to add and of a typo that has silently detached a series from the one it
+belongs to.
+_Avoid_: unknown label, unmapped category, orphan
+
+**Presence gap**:
+A month whose block omits a Category that the same Tab carries both before and after it —
+evidence of a row the owner forgot to type. Row omission only: a Category present with a
+zero actual is not a gap but a month in which nothing happened, and is already visible as
+a break in the series. Per Tab, so a Category that lapses for a whole year does not fire.
+_Avoid_: missing month, hole, absent (that is the display rule for a Category with no Entry)
+
+**Misfiled row**:
+An Entry whose `month` column disagrees with the monthly block it physically sits in. The
+block wins, because that is what the spreadsheet's own roll-ups are computed from; the
+disagreement is reported under the block's month.
+_Avoid_: misdated row, wrong month
 
 ### Classes
 
@@ -123,6 +160,21 @@ _Avoid_: reconciliation (that is the bank check), validation
 A Roll-up column whose value no longer matches the Entries above it, because a cell was
 edited after the spreadsheet last evaluated its formulas. The failure mode Roll-up check
 exists to catch.
+
+**Sign contradiction**:
+An Entry whose amount runs against the direction its Class implies — a Spend that is
+positive, an Income that is negative. A Fault, never a reclassification: for a known label
+the Class lookup table always wins. Zero is not a contradiction, since it carries no
+direction.
+_Avoid_: sign flip, sign error, wrong sign
+
+**Footer region**:
+Everything on a Tab at or below the first row bearing a footer marker (`air bank`,
+`stav uctu`, `accepted gap`) — the Bank balances, the Accepted gap, and their headers.
+Located by marker because the layout differs on every Tab and no fixed offset finds it.
+Nothing in the Footer region is an Entry, which is what keeps a balance row from being
+summed as though it were one.
+_Avoid_: footer rows, the bottom bit, balance block
 
 **Opening balance**:
 Money held before the first Entry — the `starting amount` row. Not a cashflow: it is
